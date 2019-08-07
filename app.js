@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const app=express();
 
 var items=["Buy Food","Cook Food","Eat Food"];
+var workItems=[];
 app.set("view engine","ejs");
 
 app.use(bodyParser.urlencoded({extended:true}));
@@ -20,15 +21,28 @@ app.get("/",function(req,res){
     day: 'numeric'
   };
   var day=today.toLocaleDateString("en-US",options);
-
-  res.render("list",{kindOfDay:day,newListItem: items});
+  res.render("list",{listName:day,newListItem: items});
 });
 
 
 app.post("/",function(req,res){
   item=req.body.newItem;
-  items.push(item);
-  res.redirect("/");
+  if(req.body.button==="Work"){
+    workItems.push(item);
+    res.redirect("/work");
+  }else{
+    items.push(item);
+    res.redirect("/");
+  }
+});
+
+app.get("/work",function(req,res){
+  let title="Work";
+  res.render("list",{listName:title,newListItem: workItems});
+});
+
+app.get("/about",function(req,res){
+  res.render("about");
 });
 
 app.listen("3000", function(req,res){
